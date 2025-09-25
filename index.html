@@ -43,9 +43,12 @@
             <p id="interimTranscription" class="text-gray-500 text-sm leading-loose whitespace-pre-wrap"></p>
         </div>
 
-        <div class="mt-4 w-full flex justify-center">
+        <div class="mt-4 w-full flex justify-center gap-4">
             <button id="sendBtn" class="bg-green-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-green-700 transition duration-300">
                 📤 ارسال به تلگرام
+            </button>
+            <button id="testBtn" class="bg-blue-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-blue-700 transition duration-300">
+                🧪 تست ارسال
             </button>
         </div>
     </div>
@@ -59,12 +62,17 @@
         // تنظیم رنگ‌های Web App
         tg.setHeaderColor('#0088cc');
         tg.setBackgroundColor('#f0f2f5');
+        
+        // تست اتصال
+        console.log('Telegram Web App initialized:', tg);
+        console.log('User:', tg.initDataUnsafe?.user);
 
         const startStopBtn = document.getElementById('startStopBtn');
         const statusEl = document.getElementById('status');
         const transcriptionEl = document.getElementById('transcription');
         const interimTranscriptionEl = document.getElementById('interimTranscription');
         const sendBtn = document.getElementById('sendBtn');
+        const testBtn = document.getElementById('testBtn');
 
         window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!window.SpeechRecognition) {
@@ -147,11 +155,14 @@
                         tg.showAlert('📤 در حال ارسال متن...');
                         
                         // ارسال به تلگرام
-                        tg.sendData(JSON.stringify({
+                        const dataToSend = JSON.stringify({
                             type: 'speech_to_text',
                             text: textToSend,
                             timestamp: Date.now()
-                        }));
+                        });
+                        
+                        console.log('Sending data:', dataToSend);
+                        tg.sendData(dataToSend);
                         
                         tg.showAlert('✅ متن با موفقیت ارسال شد!');
                         console.log('Sent to Telegram:', textToSend);
@@ -167,6 +178,26 @@
                     }
                 } else {
                     tg.showAlert('لطفاً ابتدا متن را تشخیص دهید!');
+                }
+            };
+
+            testBtn.onclick = () => {
+                try {
+                    // تست ارسال
+                    const testData = JSON.stringify({
+                        type: 'speech_to_text',
+                        text: 'تست ارسال از Web App',
+                        timestamp: Date.now()
+                    });
+                    
+                    console.log('Sending test data:', testData);
+                    tg.sendData(testData);
+                    
+                    tg.showAlert('🧪 داده تست ارسال شد!');
+                    
+                } catch (error) {
+                    console.error('Error sending test data:', error);
+                    tg.showAlert('❌ خطا در ارسال تست!');
                 }
             };
         }
