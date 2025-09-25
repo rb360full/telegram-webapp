@@ -55,6 +55,10 @@
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
+        
+        // تنظیم رنگ‌های Web App
+        tg.setHeaderColor('#0088cc');
+        tg.setBackgroundColor('#f0f2f5');
 
         const startStopBtn = document.getElementById('startStopBtn');
         const statusEl = document.getElementById('status');
@@ -136,16 +140,31 @@
             };
 
             sendBtn.onclick = () => {
-                if (final_transcript.trim()) {
-                    // ارسال به تلگرام
-                    tg.sendData(JSON.stringify({
-                        type: 'speech_to_text',
-                        text: final_transcript.trim(),
-                        timestamp: Date.now()
-                    }));
-                    
-                    tg.showAlert('✅ متن با موفقیت ارسال شد!');
-                    console.log('Sent to Telegram:', final_transcript.trim());
+                const textToSend = final_transcript.trim();
+                if (textToSend) {
+                    try {
+                        // نمایش پیام در حال ارسال
+                        tg.showAlert('📤 در حال ارسال متن...');
+                        
+                        // ارسال به تلگرام
+                        tg.sendData(JSON.stringify({
+                            type: 'speech_to_text',
+                            text: textToSend,
+                            timestamp: Date.now()
+                        }));
+                        
+                        tg.showAlert('✅ متن با موفقیت ارسال شد!');
+                        console.log('Sent to Telegram:', textToSend);
+                        
+                        // بستن Web App
+                        setTimeout(() => {
+                            tg.close();
+                        }, 1500);
+                        
+                    } catch (error) {
+                        console.error('Error sending to Telegram:', error);
+                        tg.showAlert('❌ خطا در ارسال متن!');
+                    }
                 } else {
                     tg.showAlert('لطفاً ابتدا متن را تشخیص دهید!');
                 }
