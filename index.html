@@ -191,6 +191,9 @@
                     });
                     
                     console.log('Sending test data:', testData);
+                    console.log('Telegram WebApp object:', tg);
+                    console.log('sendData method:', tg.sendData);
+                    
                     tg.sendData(testData);
                     
                     tg.showAlert('🧪 داده تست ارسال شد!');
